@@ -39,7 +39,7 @@ export class TasksController {
             // This is useful for debugging purposes
             console.error(error);
         }
-        if (error instanceof DbMissSyncError ) {
+        if (error instanceof DbMissSyncError) {
             //This is a fatal error we (porb.) should not recover
             // This means that:
             // 1. we called tasksService.amIOwner and it did not throw
@@ -136,6 +136,42 @@ export class TasksController {
 
     }
 
+    @Get(':id')
+    @UsePipes()
+    @ApiBearerAuth()
+    @BadTaskAccessResult()
+    @ApiParam({
+        name: 'id',
+        description: 'The ID of the task to get.',
+        example: 1,
+        required: true,
+        type: Number,
+    })
+    @ApiResponse({ status: HttpStatus.OK, description: 'The task created.', type: TaskReturnDto })
+    async getTaskById(@Param('id', ParseIntPipe) taskId: number, @Body() body: { userId: number }): Promise<TaskReturnDto> {
+        try {
+            // Check if the user can access the task
+            await this.tasksService.amIOwner(taskId, body.userId);
+            // If the task exists and the user is the owner, return it
+            const task = await this.tasksService.findOne(taskId);
+            if (!task) {
+                throw new HttpException({
+                    message: ['Task not found'],
+                    error: 'Not Found',
+                    statusCode: HttpStatus.NOT_FOUND,
+                }, HttpStatus.NOT_FOUND);
+            }
+            return {
+                count: 1,
+                data: [task],
+            };
+        }
+        catch (error) {
+            console.warn('Error retrieving task with ID:', taskId, 'for user ID:', body.userId);
+            this.defaulErrorHandler(error);
+        }
+
+    }
     // Edit a task by its ID
     @Put(':id')
     @ApiOperation({ summary: 'Edits an existing task.', description: 'Edits the task with id provided in the path and the new values as the request body. You only need to pass what you want to update but at least one field must be present. If the user does not own the task, it is marked as deleted or the task does not exists it will return an error.' })

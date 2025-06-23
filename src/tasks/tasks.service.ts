@@ -42,7 +42,7 @@ export class TasksService {
 
     // Find a task by its ID
     findOne(id: number): Promise<Task | null> {
-        return this.tasksRepository.findOneBy({ id });
+        return this.tasksRepository.findOneBy({ id: id });
     }
 
     // Check if the user is the owner of the task
