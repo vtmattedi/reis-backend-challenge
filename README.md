@@ -1,5 +1,5 @@
 <h1 align="center" style="font-weight: Bold">:desktop_computer: Projeto TODO Backend. </h1>
-Projeto de backend para um aplicativo TODO, utilizando NestJS e typeORM.
+Projeto de backend para um aplicativo TODO, utilizando NestJS e TypeORM.
 
 * [Projeto](#projeto)
 * [Como instalar](#instalando-o-aplicativo)
@@ -41,13 +41,14 @@ git clone https://github.com/vtmattedi/TodoProject
     npm install
 ```
 
-Caso não tenha o nestJS instalado globalmente, é recomendado utilizar:
+Caso não tenha o NestJS cli instalado globalmente, é recomendado utilizar:
 
 ```Bash
     npm install -g @nestjs/cli
 ```
+4. Tenha acesso a um banco de dados PostgreSQL.
 
-4. Além disso é nescessario que o banco de dados esteja funcionando e que as credenciaias estejam no arquivo `.env`.
+5. Além disso é nescessario que o banco de dados esteja funcionando e que as credenciaias estejam no arquivo `.env`.
 
 #### Configurando o Environment
 
@@ -67,9 +68,8 @@ Para o correto funcionamento é nescessario que os seguintes dados estejam prese
 * `JWT_ACCESS_TOKEN_EXPIRES`: Tempo para que o token de acesso seja válidos. Deve ser no formato 'num''unit' então algo como '72h' ou '15m'. (Sugestão: 15m).
 * `JWT_REFRESH_TOKEN_EXPIRES`: Tempo para que o *refresh* token seja válido. Deve ser no formato 'num''unit' então algo como '72h' ou '15m'.(Sugestão: 72h).
 * `NODE_ENV`: `production` ou `development`. Em *development* alguma informações extra são expostas tais como motivo da falha do login.
-* `DONT_RECOVER_FROM_ERROR`: `fasle` ou `true`
-  LOG_ROUTING_ERRORS = `true` ou `false`. Imprime os erros capturados
-
+* `DONT_RECOVER_FROM_ERROR`: `false` ou `true`. Se for `true` erros *inesperados* encontrados durante a responsta não são tratados (são jogados novamente). Caso contrario, é jogado um erro http com codigo 500, capturado pelo NestJS.
+* `LOG_ROUTING_ERRORS` = `true` ou `false`. Imprime os erros capturados durante o roteamento.
 `
 Para gerar um Salt ou JWT secret pode ser utilizado:
 
@@ -119,7 +119,7 @@ Este aquivo contém 1 documento no qual contém:
   * Misc: Rotas miscelâneas de uitlidade.
   * Flow: Conjunto de *requests* com flows para testar utilização da aplicação.
 
-Para testar:
+Para testar utilizando o insomnia:
 
 * Caso não esteja rodando no `localhost:3000`:
   * Configure as variaveis de ambiente, a `base_url` deve conter a url da apricação rodado e a variavel `protocol` deve conter http ou https. Isso está pré configurado para localhost:3000
@@ -173,7 +173,7 @@ Disto receberemos dois tokens um `accessToken`e um `refreshToken` e precisamos u
 Para ver, editar, criar e deletar as tarefas, precisamos enviar na requisição, um *header* `authorization` com valor: `Bearer <acessToken>`.
 
 Caso a resposta tenha status 401 podemos enviar uma requisição contendo um *header* `authorization` com valor: `Bearer <refreshToken>`
-para `/auth/token` e receberemos um novo `accessToken`caso nosso `refreshToken` seja válidos, e podemos continuar manipulando as tarefas deste usuario.
+para `/auth/token` e receberemos um novo `accessToken`caso nosso `refreshToken` seja válidos, e podemos continuar manipulando as tarefas deste usuário.
 
 Após isso é possivel deslogar, ou apagar a conta criada, novamente enviando um header com seu `refreshToken`
 
@@ -211,7 +211,7 @@ curl -X 'DELETE' \
 
 O projeto foi desenvolvido utilizando o framework NestJS e foi escolhido trabalhar com o PostgreSQL pois existe uma ferramenta que permite pequenos bancos de dados gratuitos perfeitos para este tipo de testes, o [neon](https://neon.com). Durante o desenvolvimento foi testado tanto no banco de dados local quanto usando o neon.
 
-Como estamos no NestJS e para manter uma boa escalabilidade, foi decido por utilizar o [typeORM](https://docs.nestjs.com/recipes/sql-typeorm).
+Como estamos no NestJS e para manter uma boa escalabilidade, foi decido por utilizar o [TypeORM](https://docs.nestjs.com/recipes/sql-typeorm).
 
 Aplicação foi desenvolvida em 4 módulos:
 
@@ -240,7 +240,7 @@ Além disso, quando estamos em ambiente de desenvolvimento (`NODE_ENV: 'developm
 
 Durante a manipulação de tarefas, a requisção passa pelo *middleware* ou seja ele contém um `accessToken` válido, entretanto, o *controller* ainda é responsavél por checar se aquele usuário pode manipular aquela tarefa.
 
-Como estamos utilizando o typeORM, desde que não haja tabelas com os nomes `refreshtokens`, `users` e `tasks` no *database* utilizado o própio typeORM as cria porém caso elas existam isso causará um erro que deve ser manualmente resolvido, pois não faz sentido fazer uma *migration* que drop tabelas que não sabemos o conteúdo. Além disso o *schema* das tabelas esta disponível [aqui](/src/model/schema.sql).
+Como estamos utilizando o TypeORM, desde que não haja tabelas com os nomes `refreshtokens`, `users` e `tasks` no *database* utilizado o própio TypeORM as cria porém caso elas existam isso causará um erro que deve ser manualmente resolvido, pois não faz sentido fazer uma *migration* que drop tabelas que não sabemos o conteúdo. Além disso o *schema* das tabelas esta disponível [aqui](/src/model/schema.sql).
 
 Nesta aplicação as tarefas podem ser apagadas e restauradas, para isso foi criado um campo `deleteAt` que marca quando elas foram deletadas e caso seja `null` significa que elas não foram deletadas (ou foram restauradas) permitindo um *soft delete* nas tarefas e *restore*. Isso foi implementado manualmente e não utilizando o `softDelete` do própio typeORM.
 
@@ -248,11 +248,11 @@ Além disso o campo `dueDate`, que determina a data limite de cada tarefa, poré
 
 ##### Autenticação
 
-Para autenticação foi utilizada uma estrategia de `accessToken` e `refreshToken` onde o usuario recebe ao fazer login um token de cada. O `accessToken` é um JWT de curta duração que permite que o usuario acesse o banco de dados até o fim da duração delete. Enquanto isso o `refreshToken` atua quase que como um token de sessão, ele tem duração bem mais alta e permite que o usuario gere novos `accessToken` e que faça operações de logout ou de fechar a conta.
+Para autenticação foi utilizada uma estrategia de `accessToken` e `refreshToken` onde o usuário recebe ao fazer login um token de cada. O `accessToken` é um JWT de curta duração que permite que o usuário acesse o banco de dados até o fim da duração delete. Enquanto isso o `refreshToken` atua quase que como um token de sessão, ele tem duração bem mais alta e permite que o usuário gere novos `accessToken` e que faça operações de logout ou de fechar a conta.
 
 Apesar de ambos serem JWT's `accessToken` e `refreshToken` não são intercambiaveis e **DEVEM** ter chaves privadas distintas usar um no lugar do outro é o mesmo que usar uma string aleatória.
 
-Toda vez que um `refreshToken` é gerado, ele é armazenado no banco de dados e toda vez que ele é utilizado em uma operação ele é, além de verificado a assinatura do JWT em sí, verificado se ele estar no banco de dados. permitindo que um usuário se conecte de mais de um dispositivo ao mesmo tempo.
+Toda vez que um `refreshToken` é gerado, ele é armazenado no banco de dados e toda vez que ele é utilizado em uma operação ele é, além de verificado a assinatura do JWT em sí, também é verificado se ele estar no banco de dados. permitindo que um usuário se conecte de mais de um dispositivo ao mesmo tempo.
 
 Ao fazer um logout com `?everywhere=true` todos os `refreshToken` deste usuário são deletados, o que significa que após o `accessToken` de outras sessões expirarem (a.k.a outros `refreshToken` do mesmo usuário), eles teram que fazer o login novamente para poder continuar acessando a API.
 
@@ -262,14 +262,14 @@ Isto também ocorre caso o usuário decida fechar sua conta (porém as *tasks* s
 
 Para criar uma conta, o usuário precia informar senha, email e nome e o email não pode já esta cadatrado. Após registrar com sucesso, ele será logado.
 
-Para fazer login o usuário precisa enviar email e senha. Se ele forem credenciais validas no sistema, o usuário recebera um  `accessToken` e `refreshToken` além de seu ID.
+Para fazer login o usuário precisa enviar email e senha. Se ele forem credenciais válidas no sistema, o usuário recebera um  `accessToken` e `refreshToken` além de seu ID.
 Ele pode com o `refreshToken` gerar novos `acessToken`.
 
 Para manipular as tarefas, o usuário precisa de um `accessToken`, mas além disso, ele precisa que o token tenha sido emitido com o ID igual ao dono da tarefa ao qual ele esta tentando manipular caso contrario ele recebera uma resposta http *Forbbiden*.
 
 Um usuário ver todas suas tarefas (com um filtro opcional sobre o status dela) ou todas suas tarefas deletadas.
 
-Um usuário pode criar uma tarefa enviando o titulo e a descrição e pode ou não enviar a data de termino da tarefa no formato `string` que vai ser parseada pelo `new Date()` do js, porém caso esta esteja presente ele tem que ser uma data [valida](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) e não pode ser no passado.
+Um usuário pode criar uma tarefa enviando o titulo e a descrição e pode ou não enviar a data de termino da tarefa no formato `string` que vai ser parseada pelo `new Date()` do js, porém caso esta esteja presente ele tem que ser uma data [válida](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) e não pode ser no passado.
 
 Um usuário pode editar tarefas utilizando ID da mesma e passando status, titulo, descrição ou data de termino(mesmas regras de criação se aplicam a data), nenhuma dessas opções é obrigatoria mas ao menos uma precisa estar presente
 
@@ -282,11 +282,11 @@ Um usuário pode fechar sua propia conta fornecendo seu `refreshToken` e suas no
 ### Melhorias futuras:
 
 Para este projeto temos algumas melhorias que podem ser feitas:
-* Adicionar válidação de email para cadastro de usuarios.
+* Adicionar válidação de email para cadastro de usuários.
 * Adicionar mais filtros possiveis para buscar tarefas (e as deletadas), especialmente para que retorne um numero especifico de tarefas começando de um offset.
 * Criar CronJob para retirar refreshTokens invalidos do banco de dados.
 * Criar CronJob para deletar permanentemente tarefas marcadas como deletadas no banco de dados e alterar o status para `late` de tarefas atrasadas.
 * Implementar um usúario admin que tenha acesso a outros usuários e tarefas.
 * ~~Fora do escopo de backend mas implementar um front, mesmo que, simples para que possa ser testado o aplicativo diretamete.~~
 * Escrever os testes unitarios pra as unidades mais importantes.
-* Trasnformar os refreshTokens em cookies ~~este era o projeto inicial mas não esteva funcionando com o insomnia apesar de funcionar no postman~~.
+* Transformar os refreshTokens em cookies ~~este era o projeto inicial mas não esteva funcionando com o insomnia apesar de funcionar no postman~~.
