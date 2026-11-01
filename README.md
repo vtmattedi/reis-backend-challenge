@@ -1,5 +1,10 @@
-<h1 align="center" style="font-weight: Bold">:desktop_computer: Projeto TODO Backend. </h1>
-Projeto de backend para um aplicativo TODO, utilizando NestJS e TypeORM.
+<h1 align="center">Desafio técnico de backend — NestJS</h1>
+
+Implementação de uma API de tarefas com NestJS, TypeORM e PostgreSQL, desenvolvida como exercício de avaliação técnica. O projeto inclui autenticação com tokens de acesso e renovação, operações sobre tarefas e documentação da API.
+
+> **Estado do projeto:** submissão histórica, sem demonstração pública ativa. O código é mantido como registro da implementação original, não como serviço em produção.
+>
+> **Retrospectiva:** a experiência evidenciou uma falha no meu processo de conferência de aderência aos requisitos do desafio. A implementação técnica, por si só, não garante que uma entrega atende integralmente ao enunciado. Desde então, passei a verificar explicitamente cada requisito e critério de aceitação antes de considerar uma submissão concluída. Este registro não afirma conformidade integral com o desafio original.
 
 * [Projeto](#projeto)
 * [Como instalar](#instalando-o-aplicativo)
@@ -8,7 +13,7 @@ Projeto de backend para um aplicativo TODO, utilizando NestJS e TypeORM.
 * [Testando](#testando-o-aplicativo)
 * [Melhorias](#melhorias-futuras)
 
-Além disso, deixei o projeto *live* e está disponível [aqui](https://todoproject-6an2.onrender.com).
+**Demonstração:** a antiga implantação pública foi desativada. Para avaliar a API, execute o projeto localmente conforme as instruções abaixo.
 
 ### Pré-Requisitos:
 
@@ -123,9 +128,7 @@ Para testar utilizando o insomnia:
 
 * Caso não esteja rodando no `localhost:3000`:
   * Configure as variaveis de ambiente, a `base_url` deve conter a url da apricação rodado e a variavel `protocol` deve conter http ou https. Isso está pré configurado para localhost:3000
-  * Para a aplicação live, disponivel em: https://todoproject-6an2.onrender.com/:
-  * `base_url`: todoproject-6an2.onrender.com
-  * `porotcol`: https
+  * A demonstração pública antiga não está mais disponível. Para testes locais, utilize `base_url: localhost:3000` e `protocol: http` (ou ajuste para uma implantação própria).
 * Testar Request individuais na pasta *Basic* ou clicar com o botão direito em uma das pastas *Flow* e clicar em executar coleção.
 
 As requisições foram feitas de tal forma que usam das variavéis de ambiente para automaticamente configurar o `accessToken` e o `refreshToken` ao fazer um `login` ou `register`. Além disso ao criar uma tarefa, o ID dela também é configurado para as requisições de `edit` e `delete`.
